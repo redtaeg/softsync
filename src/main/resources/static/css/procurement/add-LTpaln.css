@@ -1,0 +1,55 @@
+body {
+	background-color: #f1f1f1;
+}
+
+.btn-container {
+	float: right;
+	margin: 0 90px 20px;
+}
+.search-container {
+	float: right;
+	margin: 0 90px 30px;
+}
+#row1 {
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
+	background-color: white;
+	border-radius: 5px;
+	padding: 20px;
+	margin: 10px 40px;
+}
+
+.visual-title {
+/* 	margin-bottom: 15px; */
+	border-left: 3px solid black;
+	padding-left: 10px;
+}
+
+.regi-table-wrapper {
+	width: 100%;  /* 버튼 맞출거면 하단 주석 풀고 90%  */
+	overflow-x: auto;
+/* 	margin : 0 auto; */
+/* border-left : 1px solid #dadada;
+border-right : 1px solid #eee; */
+}
+
+.regi-table { 
+	width: 90%;
+	border-radius: 5px;
+/* 	margin: 20px auto; */
+	margin: 20px 80px;
+}
+
+.list-table {
+	width: 90%;
+	margin: 20px auto;
+	border-radius: 5px;
+	table-layout: fixed;
+}
+
+#row2 {
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
+	background-color: white;
+	border-radius: 5px;
+	padding: 20px;
+	margin: 10px 40px;
+}

@@ -1,0 +1,179 @@
+body {
+  background-color: #fafbfe;
+}
+
+#row1, #row2, #row3 {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.home-title {
+  font-weight: bold;
+  color: #747474;
+  margin-bottom: 10px;
+  height:  30px;
+}
+
+.page-title-box .page-title {
+  font-size: 18px;
+  margin-left: 40px;
+  line-height: 75px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/************************************************************************/
+/***************************** 정보 카드섹션*****************************/
+/************************************************************************/
+.card-wrap {
+  margin-left: 40px;
+  display: flex;
+  /* width: 50%; */
+  /* background-color: #2b80c5; */
+}
+.card {
+  box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
+  margin : 30px;
+  background-color: white;
+  border: none;
+  padding: 2.0rem;
+  border-radius: 5px;
+  width: 400px;
+  height: 160px;
+
+}
+.card-title {
+  font-weight: 100;
+  font-size: 15px;
+  color: #999;
+}
+.card-content {
+  margin: 1.5em auto !important;
+}
+
+/************************************************************************/
+/***************************** 막대그래프 *****************************/
+/************************************************************************/
+.b-graph-wrap {
+  margin-left: 40px;
+  display: flex;
+  width: 50%;
+  /* background-color: #2b80c5; */
+}
+.b-graph {
+  box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
+  margin : 30px;
+  background-color: white;
+  border: none;
+  padding: 2.0rem;
+  width: 820px;
+  margin-right: 40px;
+}
+.b-graph-body {
+  height: 230px; /* 그래프 전체의 높이 */
+  position: relative;
+  /* border: 1px solid #ccc;  */
+  /* background-color: #2196F3; */
+  
+}
+
+.bar {
+  position: absolute;
+  bottom: 0; /* 그래프의 아래쪽에 막대가 정렬되도록 설정 */
+  width: 20px; /* 막대의 너비 */
+  background-color: #2b80c5;
+  height: 0%;
+  transition: height 1s ease-in-out;
+}
+
+/************************************************************************/
+/***************************** 최근발주내역 *****************************/
+/************************************************************************/
+.recent-wrap {
+  margin-left: 40px;
+  margin-right : 100px;
+  /* display: flex; */
+  width: 45%;
+}
+.recentList {
+  height: 550px;
+  width: 900px;
+  box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
+  margin : 30px;
+  background-color: white;
+  border: none;
+  padding: 2.0rem;
+  border-radius: 5px;
+
+}
+table{
+  border: none;
+}
+.recent-item td{
+  padding: 20px 15px;
+  border: none;
+  border-bottom: 1px solid #999;
+  width : 800px;
+}
+.recent-item h5{
+ margin-top: 5px;
+ font-weight: 300;
+ color: #7a7a7a;
+}
+.recent-item h3{
+  color: #5e5e5e;
+  font-weight: 600;
+ }
+.recent-item:hover{
+ background-color: #e7e7e7;
+}
+.recent-content {
+    max-height: 450px; /* 최대 높이 설정 */
+    overflow-y: auto; /* 세로 스크롤이 필요할 때만 표시 */
+}
+
+
+
+/************************************************************************/
+/******************************* 공지사항** *****************************/
+/************************************************************************/
+.notice-wrap {
+  margin-left: 40px;
+  width: 40%;
+}
+.noticeList {
+  height: 550px;
+  width: 800px;
+  box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
+  margin: 30px 5px;
+  background-color: white;
+  border: none;
+  padding: 2.0rem;
+  border-radius: 5px;
+}
+.notice-item td {
+  padding: 15px;
+  width : 700px;
+}
+.notice-item h5 {
+  margin-top: 5px;
+  font-weight: 300;
+  color: #7a7a7a;
+}
+.notice-item h3 {
+  color: #5e5e5e;
+  font-weight: 600;
+}
+.notice-item:hover {
+  background-color: #e7e7e7;
+}
+
+
+canvas {
+  flex: 1; /* 캔버스가 가능한 최대 공간을 차지하도록 설정 */
+  max-width: calc(100% - 320px); /* card-wrap의 너비를 고려한 최대 너비 설정 */
+  max-height: 250px; /* 캔버스의 최대 높이 설정 */
+  margin-left: 20px; /* 캔버스와 card-wrap 사이의 간격 설정 */
+  max-width: 700px; 
+}

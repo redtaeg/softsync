@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<link type="text/css" rel="stylesheet" href="../css/orders/purchase_order.css">
+<link type="text/css" rel="stylesheet" href="../css/common/header.css">
+<link type="text/css" rel="stylesheet" href="../css/common/common.css">
+<link type="text/css" rel="stylesheet" href="../css/common/sidebar.css">
+<script type="text/javascript" src="../js/sidebar.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+	<div th:insert="~{/common/sidebar :: sidebar}"></div>
+			<div th:insert="~{/common/header :: header}"></div>
+	<div class="main-content">
+		<div id="row1">
+			<h2 class="visual-title">구매발주서</h2>
+			<form th:action="@{/saveOrders}" method="POST" enctype="multipart/form-data">
+				<div class="btn-container">
+					<button type="submit" class="blueBtn">저장</button>
+					<button type="button" id="popupBtn" class="blueBtn printOrder">발주서 발행</button>
+					<button type="reset" class="blueBtn">초기화</button>
+				</div>
+				<input type="hidden" id="contractNumCell" name="contract_number">
+				<input type="hidden" id="itemCodeCell" name="itemCode"> 
+				<table class="table" id="1">
+					<colgroup>
+						<col width="10%">
+						<col width="40%">
+						<col width="10%">
+						<col width="40%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>발주번호</th>
+							<td id="orderNoCell"><input type="text" name="orderNo" readonly></td>
+							<th>사업자등록번호</th>
+							<td id="brn"><input type="text" name="brn" readonly> </td>
+						</tr>
+						<tr>
+							<th>발신처</th>
+							<td><b>(주) SOFT-SYNC</b></td>
+							<th>수신처</th>
+							<td><input type="text" name="company_name" readonly></td>
+						</tr>
+						<tr>
+							<th>연락처</th>
+							<td>031-5555-5555</td>
+							<th>대표자명</th>
+							<td><input type="text" name="company_ceo" readonly></td>
+						</tr>
+						<tr>
+							<th>발주일</th>
+							<td id="orderDateCell"><input type="text" name="orderDate" id="orderDate"
+								readonly></td>
+							<th>주소</th>
+							<td><input type="text" name="company_address" readonly></td>
+						</tr>
+						<tr>
+							<th>납기일</th>
+							<td id="leadTimeCell"><input type="text"
+								name="receiveDuedate" readonly></td>
+							<th>담당자</th>
+							<td><input type="text" name="manager" readonly></td>
+						</tr>
+						<tr>
+							<th>지불조건</th>
+							<td>내규에 따름</td>
+							<th>연락처</th>
+							<td><input type="text" name="manager_tel" readonly></td>
+						</tr>
+					</tbody>
+				</table>
+				<table class="table" id="2">
+					<tr>
+						<th>번호</th>
+						<th>품명</th>
+						<th>재질</th>
+						<th>규격</th>
+						<th>단위</th>
+						<th>수량</th>
+						<th>단가</th>
+						<th>공급가액</th>
+						<th>비고</th>
+					</tr>
+					<tr>
+						<td>1</td>
+						<td id="itemNameCell"><input type="text" name="itemName" readonly></td>
+						<td id="itemMaterialCell"><input type="text" name="material" readonly></td>
+						<td id="itemDimensionsCell"><input type="text"name="dimensions" readonly></td>
+						<td>EA</td>
+						<td id="orderQuantityCell"><input type="number"name="orderQuantity"></td>
+						<td id="unitPriceCell"><input type="number" name="unitPrice" readonly></td>
+						<td id="totalPriceCell"><input type="text" name="totalPrice"readonly></td>
+						<td id="orderNote"><input type="text" name="orderNote"></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div id="row2">
+			<div id="ordersList">
+				<h2 class="visual-title">발주 대기 품목</h2>
+				      <form onsubmit="performitemSearch(event)">
+                       <div class="search-container">
+                           <select id="itemFilterSelect">
+                               <option value="itemCode" th:selected="${searchField == 'itemCode'}">품목코드</option>
+                               <option value="itemName" th:selected="${searchField == 'itemName'}">품목명</option>
+                           </select>
+                           <input type="text" id="itemSearchInput" placeholder="검색어를 입력하세요">
+                           <input type="submit" value="검색" class="blueBtn">
+                       </div>
+                   </form>
+			<table class="listTable" id="3">
+					<colgroup>
+						<col width="8%">
+						<col width="6%">
+						<col width="10%">
+						<col width="10%">
+						<col width="8%">
+						<col width="16%">
+						<col width="8%">
+						<col width="8%">
+						<col width="10%">
+						<col width="10%">
+						<col width="8%">
+					</colgroup>
+					<tr id="item">
+						<th>발주번호</th>
+						<th>계약번호</th>
+						<th>품목코드</th>
+						<th>품목명</th>
+						<th>재질</th>
+						<th>규격</th>
+						<th>발주수량</th>
+						<th>단가</th>
+						<th>발주일</th>
+						<th>납기일</th>
+						<th>추가/확인</th>
+					</tr>
+					<tr th:each="contract : ${contracts}">
+						<td class="orderNo" th:text="${contract.orders.size() > 0 ? contract.orders[0].orderNo : '-'}">N/A</td>
+						<td th:text="${contract.contract_number}"> 계약번호</td>
+						<td th:text="${contract.item.itemCode}">품목코드</td>
+						<td th:text="${contract.item.itemName}">품목명</td>
+						<td th:text="${contract.item.material}">재질</td>
+						<td th:text="${contract.item.dimensions}">규격</td>
+						<td th:text="${contract.orders.size() > 0 ? contract.orders[0].orderQuantity : '-'}">발주수량</td>
+						<td th:text="${contract.unit_price}">단가</td>
+						<td th:text="${contract.orders.size() > 0 ? contract.orders[0].orderDate : '-'}">발주일</td>
+						<td th:text="${contract.lead_time}">납기일</td>
+						<td th:if="${contract.orders.size() > 0 && contract.orders[0].orderYn == 'Y'}">
+							<button class="blueBtn detailBtn">상세</button>
+						</td>
+						<td th:unless="${contract.orders.size() > 0 && contract.orders[0].orderYn == 'Y'}">
+							<button class="blueBtn addBtn">추가</button>
+						</td>
+						
+						<td th:text="${contract.company.brn}" style="display: none;">사업자 등록번호용</td>
+					</tr>
+					
+				</table>
+				<div class="paging-wrap">
+                  <ul class="pagination"
+						th:if="${contracts.totalElements > 0}">
+                    <!--  처음 페이지로 이동 -->
+                     <li th:if="${contracts.number >= 10}"><a
+                        th:href="@{/purchase_order(page=${0})}">&laquo;</a></li>
+
+                     <!-- 이전 페이지 링크 -->
+                     <li th:if="${!contracts.isFirst()}"><a
+                        th:href="@{/purchase_order(page=${contracts.number - 1})}">&lt;</a></li>
+
+                   <!--   페이지 번호 링크 -->
+                     <th:block
+                        th:with="startPage=${(contracts.number / 10) * 10}, endPage=${(startPage + 9) < contracts.totalPages ? (startPage + 9) : contracts.totalPages - 1}">
+                        <li th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                          <!--  현재 페이지일 경우 active 클래스 추가 --> <a
+                           th:href="@{/purchase_order(page=${i})}"
+                           th:classappend="${i == contracts.number} ? 'active'"
+                           th:text="${i + 1}">Page number</a>
+                        </li>
+                     </th:block>
+
+                   <!--   다음 페이지 링크 -->
+                     <li th:if="${!contracts.isLast()}"><a
+                        th:href="@{/purchase_order(page=${contracts.number + 1})}">&gt;</a></li>                                                             
+                   <!--   10 페이지 앞으로 이동	 -->					
+						<li
+							th:if="${(contracts.number div 10) < ((contracts.totalPages - 1) div 10)}">
+							<a
+							th:href="@{/purchase_order(page=${(contracts.number div 10 + 1) * 10}, page=${contracts.number})}">&raquo;</a>
+						</li>	
+                  </ul>
+               </div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 모달화면 -->
+	<div id="modalWrap">
+		<div id="modalBody">
+			<button type="button" class="closeBtn">&times;</button>
+			<table>
+				<colgroup>
+					<col width="12%">
+					<col width="38%">
+					<col width="12%">
+					<col width="38%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<td colspan="4" style="text-align: center;"><h1>발주서</h1></td>
+
+					</tr>
+					<tr>
+						<td colspan="4" style="text-align: center;"><br> <br>
+							<span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span><span>년</span>
+							<span th:text="${#dates.format(#dates.createNow(), 'MM')}"></span><span>월</span>
+							<span th:text="${#dates.format(#dates.createNow(), 'dd')}"></span><span>일</span><br>
+							아래와 같이 발주합니다. <br> <br> (주) SOFT-SYNC (인) <!-- <img id="signature" src="../images/dojang.png" alt="결재 이미지"> -->
+							<br> <br></td>
+					</tr>
+					<tr>
+						<th colspan="4" style="text-align: center;"> 공급받는자 </th>
+					</tr>
+					<tr>
+						<th>상호</th>
+						<td>(주) SOFT-SYNC</td>
+						<th>연락처</th>
+						<td>031-5555-5555</td>
+					</tr>
+					<tr> 
+						<th colspan="4" style="text-align: center;"> 공급자 </th>
+					</tr>
+					
+					<tr>
+						<th>사업자번호</th>
+						<td id="brnModal"><input type="text" name="brn" readonly></td>
+						<th>발주번호</th>
+						<td id="orderNoModal"><input type="text" name="orderNo" readonly></td>
+					</tr>
+					<tr>
+						<th>상호</th>
+						<td id="companyNameModal"><input type="text" name="companyName" readonly></td>
+						<th>대표자성명</th>
+						<td id="companyCeoModal"><input type="text" name="companyCeo" readonly></td>
+					</tr>
+					<tr>
+						<th>주소</th>
+						<td id="companyAddressModal"><input type="text" name="companyAddress" readonly></td>
+
+						<th>담당자번호</th>
+						<td id="managerTelModal"><input type="text" name="managerTel" readonly></td>
+
+					</tr>
+				</tbody>
+			</table>
+
+			<table>
+				<colgroup>
+					<col width="5%">
+					<col width="30%">
+					<col width="15%">
+					<col width="25%">
+					<col width="25%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>No</th>
+						<th>품명</th>
+						<th>수량</th>
+						<th>단가</th>
+						<th>공급가액</th>
+					</tr>
+					<tr>
+						<td>1</td>
+						<td id="itemNameModal"><input type="text" name="itemName" readonly></td>
+						<td id="orderQuantityModal"><input type="text" name="orderQuantity" readonly></td>
+						<td id="unitPriceModal"><input type="text" name="unitPrice" readonly></td>
+						<td id="totalPriceModal"><input type="text" name="totalPrice" readonly></td>
+					</tr>
+					<tr>
+						<td>2</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>3</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>4</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>5</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>6</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>7</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>8</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr th:each="contract : ${contracts}">
+						<td>비고</td>
+						<td colspan="4" th:text="${contract.orders.size() > 0 ? contract.orders[0].orderNote : '-'}"></td>
+					</tr>
+				</tbody>
+			</table>
+			<div>
+				<button type="submit" id="sendOrderButton" class="blueBtn">발주서 전송</button>
+				<button type="reset" class="blueBtn" id="printBtn"
+					onClick="printModalContent()">파일저장 및 인쇄</button>
+			</div>
+
+		</div>
+	</div>
+
+
+
+
+
+
+	<script>
+	const popupBtn = document.getElementById("popupBtn"); // 팝업 버튼 요소 가져오기
+	const modalWrap = document.getElementById("modalWrap"); // 모달 요소 가져오기
+	const closeBtn = document.querySelector(".closeBtn"); // 모달 닫기 버튼 요소 가져오기
+	const modalImage = document.getElementById("modalImage");
+	
+	// 팝업 버튼 클릭 시 모달 열기
+	popupBtn.addEventListener("click", function() {
+	  modalWrap.style.display = "block";
+	
+	   // row1의 데이터 가져와서 모달에 채워 넣기
+    const orderNo = document.getElementById("orderNoCell").querySelector("input").value;
+    const brn = document.getElementById("brn").querySelector("input").value;
+    const companyName = document.querySelector("input[name='company_name']").value;
+    const companyCeo = document.querySelector("input[name='company_ceo']").value;
+    const companyAddress = document.querySelector("input[name='company_address']").value;
+    const managerTel = document.querySelector("input[name='manager_tel']").value;
+    const itemName = document.querySelector("input[name='itemName']").value;
+    const orderQuantity = document.querySelector("input[name='orderQuantity']").value;
+    const unitPrice = document.querySelector("input[name='unitPrice']").value;
+    const totalPrice = document.querySelector("input[name='totalPrice']").value;
+
+
+    document.getElementById("brnModal").querySelector("input").value = brn;
+    document.getElementById("orderNoModal").querySelector("input").value = orderNo;
+    document.getElementById("companyNameModal").querySelector("input").value = companyName;
+    document.getElementById("companyCeoModal").querySelector("input").value = companyCeo;
+    document.getElementById("companyAddressModal").querySelector("input").value = companyAddress;
+    document.getElementById("managerTelModal").querySelector("input").value = managerTel;
+    document.getElementById("itemNameModal").querySelector("input").value = itemName;
+    document.getElementById("orderQuantityModal").querySelector("input").value = orderQuantity;
+    document.getElementById("unitPriceModal").querySelector("input").value = unitPrice;
+    document.getElementById("totalPriceModal").querySelector("input").value = totalPrice;
+});
+	
+	
+	// 모달 닫기 버튼 클릭 시 모달 닫기
+	closeBtn.addEventListener("click", function() {
+	  modalWrap.style.display = "none";
+	});
+	
+	// 모달 외부 클릭 시 모달 닫기
+	window.addEventListener("click", function(event) {
+	  if (event.target === modalWrap) {
+	    modalWrap.style.display = "none";
+	  }
+	});
+
+	function printModalContent() {
+	    // 인쇄할 내용을 저장할 변수
+	    var modalContent = document.getElementById('modalBody').innerHTML;
+
+	    // 프린트하기 전에 모든 입력 필드의 값을 텍스트로 변경
+	    var inputs = document.querySelectorAll('#modalWrap input');
+	    inputs.forEach(function(input) {
+	        input.outerHTML = input.value;
+	    });
+
+	    // 프린트
+	    window.print();
+
+	    // 프린트 후에 모든 입력 필드의 값을 원래대로 복원
+	    var inputs = document.querySelectorAll('#modalWrap span');
+	    inputs.forEach(function(input) {
+	        input.outerHTML = '<input type="text" value="' + input.textContent + '" readonly>';
+	    });
+	}
+
+	// 버튼 클릭 이벤트에 함수 연결
+	document.getElementById('printBtn').addEventListener('click', function() {
+	    printModalContent();
+	});
+	
+	
+	// 이메일 전송
+	document.getElementById('sendOrderButton').addEventListener('click', function() {
+	    // 기능 없이 클릭했을 때 단순한 알람 창만 띄우도록 합니다.
+	    alert('발주서가 전송되었습니다!');
+	});
+
+
+</script>
+	<script>
+	/////////////////////////////발주대기항목 하단 테이블 추가 버튼누르면 상단에 값입력
+  $(document).ready(function() {
+	  $('#3').on('click', 'button.addBtn', function() {
+		  
+
+	    var $row = $(this).closest('tr');
+	    var contractNum = $row.find('td:nth-child(2)').text().trim();
+	    var itemCode = $row.find('td:nth-child(3)').text().trim();
+	    var itemName = $row.find('td:nth-child(4)').text().trim();
+	    var itemMaterial = $row.find('td:nth-child(5)').text().trim();
+	    var itemDimensions = $row.find('td:nth-child(6)').text().trim();
+	    var unitPrice = $row.find('td:nth-child(8)').text().trim();
+	    var leadTime = $row.find('td:nth-child(10)').text().trim();
+	    var leadTimeValue = parseInt(leadTime, 10);
+	    console.log(leadTimeValue);
+	    
+	    
+	    var leadTimeREAL = getCurrentDate1(leadTimeValue);
+	    
+	    var brn = $row.find('td:nth-child(12)').text().trim();
+	    
+	    var orderDate = $('#orderDateCell input').val();
+	    $('#row1').find('input').val('');
+	    $('#orderDateCell input').val(orderDate);
+		
+	    $('#contractNumCell').val(contractNum);
+	    $('#itemCodeCell').val(itemCode);
+	    $('#itemNameCell input').val(itemName);
+	    $('#itemMaterialCell input').val(itemMaterial);
+	    $('#itemDimensionsCell input').val(itemDimensions);
+	    $('#unitPriceCell input').val(unitPrice);
+	    $('#leadTimeCell input').val(leadTimeREAL);
+	    $('#brn input').val(brn).trigger('change');
+	    
+	    
+	  });
+	  
+	});
+
+
+/////////////////////////////발주 내용 저장 상세보기
+$(document).ready(function(){
+    $(".detailBtn").click(function(){
+        var orderNo = $(this).closest("tr").find("td:first").text();
+        console.log(orderNo);
+        
+        $.ajax({
+            url: '/getOrderDetails', 
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ orderNo: orderNo }),
+            success: function(data) {
+ 
+            	    $('#row1').find('input').val('');
+            	    console.log(data);
+            	    
+            	    
+            	    $("#orderNoCell input").val(data.orderNo).prop('readonly', true);
+            	    $("#orderDateCell input").val(data.orderDate).prop('readonly', true);
+
+            	    var receiveDuedate = new Date(data.receiveDuedate);
+            	    var formattedDate = receiveDuedate.getFullYear() + '-' + 
+            	        ('0' + (receiveDuedate.getMonth() + 1)).slice(-2) + '-' + 
+            	        ('0' + receiveDuedate.getDate()).slice(-2);
+            	    $("#leadTimeCell input").val(formattedDate).prop('readonly', true);
+
+            	    $('#itemNameCell input').val(data.item.itemName).prop('readonly', true);
+            	    $('#itemDimensionsCell input').val(data.item.dimensions).prop('readonly', true);
+            	    $('#itemMaterialCell input').val(data.item.material).prop('readonly', true);
+            	    $('#orderQuantityCell input').val(data.orderQuantity).prop('readonly', true);
+            	    $('#totalPriceCell input').val(data.totalPrice).prop('readonly', true);
+            	    $("#row1 input[name='orderNote']").val(data.orderNote).prop('readonly', true) ;
+            	    $("#row1 input[name='brn']").val(data.company.brn);
+            	    $("#row1 input[name='company_name']").val(data.company.company_name);
+            	    $("#row1 input[name='company_ceo']").val(data.company.company_ceo);
+            	    $("#row1 input[name='company_address']").val(data.company.company_address);
+            	    $("#row1 input[name='manager']").val(data.company.manager);
+            	    $("#row1 input[name='manager_tel']").val(data.company.manager_tel);
+            	    
+            	    
+            	    $('#unitPriceCell input').val(data.contract.unit_price).prop('readonly', true);
+            	}
+        });
+    });
+});
+    
+
+</script>
+
+
+	<!-- brn을 통해 업체명/계좌/비고를 불러옴(제이쿼리) -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+		    $('input[name="brn"]').on('change', function(event) { 
+		        var brn = $(this).val(); 
+		        if (brn !== '') { 
+		            $.ajax({
+		                url: '/getCompanyInfo', // 서버의 컨트롤러 경로
+		                type: 'POST',
+		                contentType: 'application/json',
+		                data: JSON.stringify({ brn: brn }), // 사업자번호를 JSON 형식으로 전송
+		                success: function(response) {
+		                    // 서버로부터 받은 데이터를 화면에 표시
+		                    $('input[name="company_name"]').val(response.company_name);
+		                    $('input[name="manager"]').val(response.manager);
+		                    $('input[name="company_ceo"]').val(response.company_ceo);
+		                    $('input[name="company_address"]').val(response.company_address);
+		                    $('input[name="manager_tel"]').val(response.manager_tel);
+		                }
+		            });
+		        }
+		    });
+		});
+
+		
+   /////////////////// 현재 날짜를 가져오는 함수
+    function getCurrentDate() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+        const day = String(now.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+   
+/////////////////// 현재 날짜를 가져오는 함수2 //  납기일 더하는 용으로 하나 생성함 6/4
+    function getCurrentDate1(dd) {
+    	const a = new Date();
+        a.setDate(a.getDate() + dd); // 현재 날짜에 dd일을 더함
+        const y = a.getFullYear();
+        const m = String(a.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+        const d = String(a.getDate()).padStart(2, '0');
+        
+        console.log("a:", a); // 디버깅용으로 날짜 객체 출력
+        console.log("y:", y);
+        console.log("m:", m);
+        console.log("d:", d);
+        
+        return `${y}-${m}-${d}`;
+    }
+
+
+
+
+
+    // 페이지가 로드될 때 실행되는 함수
+    window.onload = function() {
+        const orderDateInput = document.getElementById('orderDate');
+        // 현재 날짜를 가져와서 입력란에 설정
+        orderDateInput.value = getCurrentDate();
+    };
+    
+
+////////////////공급가액 자동 계산
+document.addEventListener('DOMContentLoaded', function () {
+    const unitPriceInput = document.querySelector('input[name="unitPrice"]');
+    const orderQuantityInput = document.querySelector('input[name="orderQuantity"]');
+    const totalPriceInput = document.querySelector('input[name="totalPrice"]');
+
+    function calculateTotalPrice() {
+        const unitPrice = parseFloat(unitPriceInput.value.replace(/,/g, '')) || 0;
+        const orderQuantity = parseFloat(orderQuantityInput.value) || 0;
+        const totalPrice = unitPrice * orderQuantity;
+        // 공급가액에 콤마 없이 표시
+        //totalPriceInput.value = totalPrice.toString();
+        
+        //콤마 있게 표시
+         totalPriceInput.value = totalPrice.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); 
+    }
+
+    unitPriceInput.addEventListener('input', calculateTotalPrice);
+    orderQuantityInput.addEventListener('input', calculateTotalPrice);
+});
+
+
+
+</script>
+ <script>
+   function performitemSearch(event) {
+      event.preventDefault();
+       var filter = document.getElementById('itemFilterSelect').value;
+       var searchText = document.getElementById('itemSearchInput').value.trim();
+
+       if (searchText === '') {
+           alert("검색어를 입력하세요");
+           return;
+       }
+
+       // 검색어와 필터를 세션에 저장합니다.
+       sessionStorage.setItem('itemSearchField', filter);
+       sessionStorage.setItem('itemSearchKeyword', searchText);
+       sessionStorage.setItem('searchType', 'item');
+
+       var url = '/purchase_order?searchField=' + encodeURIComponent(filter) + '&searchKeyword=' + encodeURIComponent(searchText) + '&searchType=item';
+       window.location.href = url;
+   }
+
+
+   // 새로고침 시 세션 저장소를 확인하여 검색어와 필터를 초기화합니다.
+   document.addEventListener('DOMContentLoaded', function () {
+       var itemSearchField = sessionStorage.getItem('itemSearchField');
+       var itemSearchKeyword = sessionStorage.getItem('itemSearchKeyword');
+
+       if (itemSearchField && itemSearchKeyword) {
+           document.getElementById('itemFilterSelect').value = itemSearchField;
+           document.getElementById('itemSearchInput').value = itemSearchKeyword;
+           // URL에서 검색 조건 제거
+           window.history.replaceState({}, document.title, window.location.pathname);
+       }
+
+       // 검색 결과가 없는 경우 경고 메시지를 표시합니다.
+       var contractSearchEmpty = [[${contractSearchEmpty}]];
+
+       if (contractSearchEmpty && sessionStorage.getItem('searchType') === 'item') {
+           alert("품목 검색 결과가 없습니다.");
+           sessionStorage.removeItem('itemSearchField');
+           sessionStorage.removeItem('itemSearchKeyword');
+       }
+       // 검색 후 세션 저장소를 비웁니다.
+       sessionStorage.removeItem('searchType');
+   });
+    </script>
+
+</body>
+</html>

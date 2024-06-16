@@ -1,0 +1,119 @@
+@charset "UTF-8"; 
+
+body {
+	background-color: #f1f1f1;
+	font
+}
+
+.main-content {
+	display: flex;
+}
+
+.btn-container {
+	float: right;
+	margin: 20px;
+}
+#row1 {
+	/* border: solid 1px #999; */
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+	background-color: white;
+	border-radius: 5px;
+	padding: 20px;
+	margin: 10px 20px;
+	width: 650px;
+	height: 850px;
+}
+#row1 select {
+	width : 200px;
+}
+/* .table { 
+	margin-top : 50px; 
+	} */
+	
+#row2 {
+	/* border: solid 1px #999; */
+	box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+	background-color: white;
+	border-radius: 5px;
+	padding: 20px;
+	margin: 10px 20px;
+	width: 1200px;
+<<<<<<< HEAD
+	height: 850px
+=======
+	height: 850px;
+		   overflow-y: auto;
+>>>>>>> de6ea33e1bae39fb8775b33592b6e545e3f56f35
+}
+
+.visual-title {
+	/* margin-bottom: 10px; */
+	border-left: 3px solid black;
+	padding-left: 10px;
+}
+
+form div {
+	margin-bottom: 20px;
+}
+
+label {
+	margin-right: 10px;
+}
+
+
+.search-container {
+	float: right;
+	margin: 20px 60px;
+}
+
+#itemFilterSelect {
+	margin: 0px 10px;
+}
+
+.actions {
+	text-align: right;
+	margin-top: 10px;
+}
+
+.prodTB { 
+	margin : 80px 0;
+}
+
+/* 반응형 웹 */
+@media ( max-width : 768px) {
+	.search-bar, .date-range {
+		display: block;
+		margin-right: 0;
+		width: 100%;
+	}
+}
+.btn-container {
+	float: right;
+	margin: 20px;
+}
+
+.table, td, th {
+	width: 1200px;
+	margin: 20px auto;
+}
+
+.listTable {
+	width: 90%;
+	margin: 20px auto;
+
+}
+
+.deleteBtn {
+	padding: 10px 20px;
+	color: white;
+	background-color: #2d91ff;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	heigth : 
+}
+
+.deleteBtn:hover {
+	background-color: #0056b3;
+}

@@ -1,0 +1,96 @@
+body {
+  background-color: #f1f1f1;
+}
+
+#resultsTable {
+    width: 100%;
+    margin: 20px auto;
+}
+
+.table td {
+    colspan="2";
+}
+
+#row1 {
+/* border: solid 1px #999; */
+box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); 
+background-color: white;
+border-radius: 5px;
+padding: 20px;
+margin: 10px 40px;
+}
+tr.small td input{
+    width: 100%;
+    margin: 0 auto;
+}
+
+#row2 {
+  /* border: solid 1px #999; */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); 
+  background-color: white;
+  border-radius: 5px;
+  padding: 20px;
+  margin: 10px 40px;
+}
+.visual-title {
+
+  border-left: 3px solid black;
+  padding-left: 10px;
+}
+
+.search-container {
+  width: 90%;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.search-bar {
+
+	float: right;
+	margin: 0 0 30px 0 ;
+}
+
+form div {
+  margin-bottom: 20px;
+}
+label {
+  margin-right: 10px;
+}
+
+
+
+
+.actions {
+	width : 100%;
+}
+.actions button {
+	float : right;
+}
+
+/* 반응형 웹 */
+@media (max-width: 768px) {
+  .search-bar, .date-range {
+      display: block;
+      margin-right: 0;
+      width: 100%;
+  }
+  select, input[type="date"], input[type="text"], button {
+      width: calc(100% - 16px);
+  }
+}
+
+.deleteBtn {
+	padding: 10px 20px;
+	color: white;
+	background-color: #2d91ff;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	heigth : 
+}
+
+.deleteBtn:hover {
+	background-color: #0056b3;
+}

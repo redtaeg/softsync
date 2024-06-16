@@ -1,0 +1,99 @@
+body {
+  background-color: #fafbfe;
+}
+
+#row1 {
+ /*  border: solid 1px #999; */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
+  background-color: white;
+  border-radius: 5px;
+  padding: 20px;
+  margin: 10px 40px;
+  
+}
+
+#row1 .content-card {
+  display: flex;
+  flex-wrap: wrap; /* 요소들이 래핑되도록 설정 */
+}
+
+canvas {
+  flex: 1; /* 캔버스가 가능한 최대 공간을 차지하도록 설정 */
+  max-width: calc(100% - 320px); /* card-wrap의 너비를 고려한 최대 너비 설정 */
+  max-height: 680px; /* 캔버스의 최대 높이 설정 */
+  margin-right: 10px; /* 캔버스와 card-wrap 사이의 간격 설정 */
+  max-width: 1400px; /* 그래프의 너비를 800px로 고정 */
+}
+
+.home-title {
+  font-weight: bold;
+  color: #747474;
+  margin-bottom: 10px;
+  height: 30px;
+}
+
+.visual-title {
+  margin-bottom: 15px;
+  border-left: 3px solid black;
+  padding-left: 10px;
+}
+
+.page-title-box .page-title {
+  font-size: 18px;
+  margin-left: 40px;
+  line-height: 75px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/************************************************************************/
+/***************************** 정보 카드섹션*****************************/
+/************************************************************************/
+.search-container {
+  width: 90%;
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-radius: 5px;
+}
+
+#searchForm {
+	margin : 30px 0 30px 650px;
+}
+.card-wrap {
+  display: flex;
+  flex-direction: column;
+  margin-left : 40px;
+}
+
+.card {
+  box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
+  margin: 10px 0; /* 카드 간의 간격 조절 */
+  background-color: white;
+  border: none;
+  padding: 1.5rem;
+  border-radius: 5px;
+  width: 300px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-weight: 800;
+  font-size: 15px;
+  color: black;
+/*   background-color: rgba(43, 128, 197, 0.5); */
+}
+
+.card:nth-child(1) .card-title {
+  color: black;
+  background-color: #c9e6e9;
+}
+
+.card:nth-child(2) .card-title {
+  color: black;
+  background-color:  rgba(43, 128, 197, 0.4);
+}

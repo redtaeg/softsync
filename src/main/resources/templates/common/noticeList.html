@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link type="text/css" rel="stylesheet" href="../css/common/header.css">
+  <link type="text/css" rel="stylesheet" href="../css/common/common.css">
+  <link type="text/css" rel="stylesheet" href="../css/common/notice.css">
+  <link type="text/css" rel="stylesheet" href="../css/common/sidebar.css">
+  <script type="text/javascript" src="../js/sidebar.js"></script>
+</head>
+<body>
+<div th:insert="~{common/sidebar :: sidebar}"></div>
+<div th:insert="~{common/header :: header}"></div>
+<div class="main-content">
+	<div id="row1">
+		<div class="list_wrap">
+			<h2 class="visual-title">공지사항</h2>
+			<div th:if="${notices == null or notices.empty}" class="no_result">
+				<p>공지사항이 없습니다.</p>
+			</div>
+			<div th:if="${notices != null and not notices.empty}" class="notice-content">
+				<table>
+					<colgroup>
+						<col width="50">
+						<col width="700">
+						<col width="100">
+						<col width="100">
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col">번호</th>
+							<th scope="col">제목</th>
+							<th scope="col">작성자</th>
+							<th scope="col">작성일</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="notice : ${notices}">
+							<td th:text="${notice.boardNo}" class="list_num"></td>
+							<td class="list_title">
+								<a th:href="@{'/read/' + ${notice.boardNo}}">[[${notice.title}]]</a>
+							</td>
+							<td><p th:text="${notice.employeeId != null ? notice.employeeId.department : 'Unknown'}"></p></td>
+							<td th:text="${#temporals.format(notice.regDate, 'yyyy-MM-dd')}"></td>
+
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

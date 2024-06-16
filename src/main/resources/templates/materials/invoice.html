@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>거래명세서 조회</title>
+<link type="text/css" rel="stylesheet" href="../css/common/header.css">
+<link type="text/css" rel="stylesheet" href="../css/common/common.css">
+<link type="text/css" rel="stylesheet" href="../css/common/sidebar.css">
+<link type="text/css" rel="stylesheet" href="../css/materials/invoice.css">
+<script type="text/javascript" src="../js/sidebar.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div th:insert="~{/common/sidebar :: sidebar}"></div>
+    <div th:insert="~{/common/header :: header}"></div>
+    <div class="main-content">
+        <div id="row1">
+            <h2 class="visual-title">거래명세서</h2>
+            <div class="search-container">
+            	<div class="search-bar">
+                    <!-- 날짜 선택 영역 -->
+                    <div class="date-range">
+                        <label for="startDate"></label>
+                        <input type="date" id="startDate">
+                        <label for="endDate">~</label>
+                        <input type="date" id="endDate">
+                  
+                        <select id="filterSelect">
+                            <option value="itemCode">품목코드</option>
+                            <option value="itemName">품목명</option>
+                            <option value="ProcurementNum">발주번호</option>
+                            <option value="OrderDate">발주일</option>
+                            <option value="CompanyName">업체명</option>
+                        </select>
+                        <input type="text" id="searchInput" placeholder="검색...">
+                        <button type="button" onclick="performSearch()" class="blueBtn">검색</button>
+                    </div>
+              </div>
+                <!-- 결과 표시 테이블 -->
+                <table id="resultsTable" class="table">
+                    <colgroup>
+                        <col width="10%">
+                        <col width="15%">
+                        <col width="15%">
+                        <col width="15%">
+                        <col width="8%">
+                        <col width="15%">
+                        <col width="15%">
+                        <col width="10%">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>발주번호</th>
+                            <th>업체명</th>
+                            <th>품목코드</th>
+                            <th>품목명</th>
+                            <th>발주량</th>
+                            <th>발주일</th>
+                            <th>입고완료일</th>
+                            <th>처리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <th:block th:each="invoice : ${invoices}">
+                            <tr>
+                                <td th:text="${invoice.receiving.orders.orderNo}"></td>
+                                <td th:text="${invoice.receiving.orders.company.company_name}"></td>
+                                <td th:text="${invoice.receiving.orders.item.itemCode}"></td>
+                                <td th:text="${invoice.receiving.orders.item.itemName}"></td>
+                                <td th:text="${invoice.receiving.orders.orderQuantity}"></td>
+                                <td th:text="${invoice.receiving.orders.orderDate}"></td>
+                                <td th:text="${invoice.receiving.receiveDate}"></td>
+                                <td th:switch="${invoice.publishYn}">
+                               	 <input type="hidden" class="publishYn" th:value="${invoice.publishYn}">
+                               	  <input type="hidden" class="publishDate" th:value="${invoice.publishDate}">
+								    <span th:case="'N'">
+								        <input type="button" value="발행하기" class="popupBtn blueBtn publish">
+								    </span>
+								    <span th:case="'Y'">
+								        <input type="button" value="발행완료" class="popupBtn blueBtn publish">
+								    </span>
+								</td>
+                            </tr>
+                        </th:block>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modalWrap" style="display:none;">
+        <form id="searchForm" action="/saveInvice" method="post" onsubmit="return checkOption()">
+        <div id="modalBody">
+          <div id=invoice>
+            <table class="table1" id="1">
+                <colgroup>
+                    <col width="1%">
+                    <col width="15%">
+                    <col width="10%">
+                    <col width="1%">
+                    <col width="10%">
+                    <col width="15%">
+                </colgroup>
+                <tbody>
+                    <tr><th colspan="7">거래명세서</th></tr>
+                    <tr>
+                        <th rowspan="7">공<br>급<br>받<br>는<br>자</th>
+                    </tr>
+                    <tr>
+                        <th>발주번호</th>
+                        <td class="orderNo" ></td>
+                        <th rowspan="6">공<br><br>급<br><br>자</th>
+                        <th>사업자등록번호</th>
+                        <td class="brn" ></td>
+                    </tr>
+                    <tr>
+                        <th>상호</th>
+                        <td>(주) SOFT-SYNC</td>
+                        <th>상호</th>
+                        <td class="company_name" ></td>
+                    </tr>
+                    <tr>
+                        <th>연락처</th>
+                        <td>031-5555-5555</td>
+                        <th>대표자</th>
+                        <td class="company_ceo" ></td>
+                    </tr>
+                    <tr>
+                        <th>발행일</th>
+                        <td class="publishDate" ></td>
+                        <th>주소</th>
+                        <td class="company_address" ></td>
+                    </tr>
+                    <tr>
+                        <th>지불조건</th>
+                        <td>당사 지불요건에 따름</td>
+                        <th>담당자</th>
+                        <td class="manager" ></td>
+                    </tr>
+                    <tr>
+                        <th>합계 금액</th>
+                        <td class="total_price" ></td>
+                        <th>연락처</th>
+                        <td class="manager_tel" ></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table1">
+                <colgroup>
+                    <col width="4%">
+                    <col width="4%">
+                    <col width="11%">
+                    <col width="17%">
+                    <col width="8%">
+                    <col width="8%">
+                    <col width="8%">
+                    <col width="10%">
+                    <col width="15%">
+                </colgroup>
+                <tr>
+                    <th colspan="2">입고일</th>
+                    <th>품목</th>
+                    <th>규격</th>
+                    <th>수량</th>
+                    <th>단가</th>
+                    <th>공급가액</th>
+                    <th>세액</th>
+                    <th>비고</th>
+                </tr>
+                <tr class="small">
+                    <td colspan="2" class="month"></td>
+                    <!-- <td class="day"></td> -->
+                    <td class="itemName"></td>
+                    <td class="dimensions"></td>
+                    <td class="quantity"></td>
+                    <td class="price" ></td>
+                    <td class="supply_price" ></td>
+                    <td class="tax" ></td>
+                    <td class="text">
+                    	<input type="hidden" name="reseiving_no"></td>
+                </tr>
+            </table>
+            </div>
+             <div>
+                <button type="submit" class="blueBtn submit">명세서 발행</button>
+                <button type="reset" class="blueBtn" id="printBtn">인쇄</button>
+                <button type="reset" class="blueBtn" id="saveBtn">저장</button>
+            </div>
+            </div>
+		</form>
+    </div>
+
+    <script th:inline="javascript">
+    
+    //모달 오픈인데;;
+        $(document).ready(function(){
+            $(".publish").click(function(){
+                var orderNo = $(this).closest("tr").find("td:first").text();
+                
+                var $td = $(this).closest("td"); // 가장 가까운 td 요소 찾기
+                var publishYn = $td.find(".publishYn").val(); // td 안에서 publishYn 값 찾기
+               
+                
+                var publishDay = $td.find(".publishDate").val();
+                $.ajax({
+                    url: "/getReceive",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ orderNo: orderNo }),
+                    success: function(data){
+                    	
+                        $("#modalWrap td[class='orderNo']").text(data.orders.orderNo); //발주번호
+                        
+                        $("#modalWrap td[class='publishDate']").text(data.receiveDate); //공급일(명세서 전송일)
+						
+                     // publishDay 값이 없을 경우에만 새로운 날짜 생성
+                        if (!publishDay) {
+                            publishDay = new Date(); // 새로운 날짜 생성
+                        } else {
+                            publishDay = new Date(publishDay); // 기존의 publishDay 값 사용
+                            console.log("기존 발행일: " + publishDay);
+                        }
+                        var yyyy = publishDay.getFullYear();
+                        var mm = String(publishDay.getMonth() + 1).padStart(2, '0');
+                        var dd = String(publishDay.getDate()).padStart(2, '0') ;
+                        var publishDate = yyyy + '년 ' + mm + '월 ' + dd + '일';
+                       
+
+                        var quantity = data.receiveQuantity;
+                        console.log(quantity);
+                        var price = data.orders.contract.unit_price; //단가
+                        var supply_price = quantity * price;     // 총단가
+                        var tax = supply_price * 0.1;   //세금
+                        var total_price = supply_price + tax; //총액
+                        console.log(data); // data : 입고
+                        $("#modalWrap td[class='brn']").text(data.orders.company.brn);
+                        $("#modalWrap td[class='company_name']").text(data.orders.company.company_name);
+                        $("#modalWrap td[class='company_ceo']").text(data.orders.company.company_ceo);
+                        $("#modalWrap td[class='company_address']").text(data.orders.company.company_address);
+                        $("#modalWrap td[class='manager']").text(data.orders.company.manager);
+                        $("#modalWrap td[class='manager_tel']").text(data.orders.company.manager_tel);
+                        $("#modalWrap td[class='total_price']").text(total_price.toLocaleString());
+
+                        $("#modalWrap td[class='month']").text(yyyy+'/'+mm+'/'+dd);
+                        $("#modalWrap td[class='day']").text(dd);
+                        $("#modalWrap td[class='itemName']").text(data.orders.item.itemName);
+                        $("#modalWrap td[class='dimensions']").text(data.orders.item.dimensions);
+                        $("#modalWrap td[class='quantity']").text(quantity);
+                        $("#modalWrap td[class='price']").text(price.toLocaleString());
+                        $("#modalWrap td[class='supply_price']").text(supply_price.toLocaleString());
+                        $("#modalWrap td[class='tax']").text(tax.toLocaleString());
+
+                    
+                        if(publishYn === 'Y'){
+                          $("#modalWrap input[name='publis hDate']").val(publishDate);
+                          $(".submit").hide();
+                          
+                        }else{
+                          $("#modalWrap input[name='publishDate']").val(publishDate);
+                        } 
+                        
+                        
+                        $("#modalWrap input[name='reseiving_no']").val(data.receiveNumber);
+                        
+                        
+                        
+                        
+                    },
+                    error: function(xhr, status, error) {
+                        alert("서버에서 주문 정보를 가져오는 동안 오류가 발생했습니다.");
+                        console.error(error);
+                    }
+                });
+            });
+        });
+
+        //모달 인쇄
+        document.getElementById('printBtn').addEventListener('click', function() {
+            var modalWrap = document.getElementById('modalWrap');
+            var invoice = document.getElementById('invoice');
+            html2canvas(invoice).then(function(canvas) {
+                var imgData = canvas.toDataURL('image/png');
+                var printWindow = window.open('', '_blank');
+                printWindow.document.write('<html><body>');
+                printWindow.document.write('<img src="' + imgData + '" alt="Modal Content Image" style="max-width:100%;">');
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+                printWindow.onload = function() {
+                    printWindow.print();
+                    printWindow.close();
+                };
+            });
+        });
+
+        //모달 취소
+        document.querySelectorAll('.popupBtn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById("modalWrap").style.display = 'block';
+            });
+        });
+        
+        
+        //명세서 발행
+        function checkOption(){
+        	var check = confirm("거래명세서를 발행하시겠습니까?");
+        	if(check){
+        		return true;
+        	}else{
+        	 return false;	
+        	}
+        }
+        
+        //모달 명세서 저장
+document.getElementById('saveBtn').addEventListener('click', function() {
+    // invoice 요소를 가져옴
+    var invoiceDiv = document.getElementById('invoice');
+
+    // html2canvas를 사용하여 invoiceDiv를 이미지로 변환
+    html2canvas(invoiceDiv).then(function(canvas) {
+        // Canvas를 이미지 URL로 변환  
+        var imageData = canvas.toDataURL('image/jpeg');
+
+        // 이미지를 저장할 때 사용할 <a> 엘리먼트 생성
+        var downloadLink = document.createElement('a');
+        // 이미지 URL을 href 속성에 설정
+        downloadLink.href = imageData;
+        // 이미지를 다운로드할 때 사용할 파일 이름 설정
+        downloadLink.download = '거래명세서.jpg'; // 파일명은 원하는대로 변경 가능
+
+        // body에 downloadLink 추가
+        document.body.appendChild(downloadLink);
+
+        // downloadLink를 클릭하여 이미지 저장
+        downloadLink.click();
+
+        // 이미지 저장 후 downloadLink 제거
+        document.body.removeChild(downloadLink);
+    });
+});
+     
+
+        
+// 모달 외부 클릭 시 모달 닫기
+window.addEventListener("click", function(event) {
+    if (event.target === modalWrap) {
+        modalWrap.style.display = "none";
+    }
+});
+
+
+    </script>
+</body>
+</html>
